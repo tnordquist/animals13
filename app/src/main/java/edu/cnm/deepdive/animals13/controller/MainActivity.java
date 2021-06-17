@@ -1,6 +1,10 @@
 package edu.cnm.deepdive.animals13.controller;
 
 import android.util.Log;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import edu.cnm.deepdive.animals13.BuildConfig;
@@ -11,17 +15,35 @@ import java.io.IOException;
 import java.util.List;
 import retrofit2.Response;
 
-
 public class MainActivity extends AppCompatActivity {
+
+  private WebView contentView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    contentView = findViewById(R.id.content_view);
+    setupWebView();
+  }
+
+  private void setupWebView() {
+    contentView.setWebViewClient(new WebViewClient() {
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        return false;
+      }
+    });
+    WebSettings settings = contentView.getSettings();
+    settings.setSupportZoom(true);
+    settings.setBuiltInZoomControls(true);
+    settings.setDisplayZoomControls(false);
+    settings.setUseWideViewPort(true);
+    settings.setLoadWithOverviewMode(true);
     new Retriever().start();
   }
 
-  private class Retriever extends Thread {
+  private static class Retriever extends Thread {
 
     @Override
     public void run() {
