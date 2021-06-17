@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
   private WebView contentView;
   private Spinner animalSelector;
+  private ArrayAdapter<Animal> adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
             .execute();
         if (response.isSuccessful()) {
           List<Animal> animals = response.body();
-          Random rng = new Random();
-          String url = animals.get(rng.nextInt(animals.size())).getImageUrl();
+          String url = animals.get(0).getImageUrl();
+            adapter = new ArrayAdapter<>(MainActivity.this,
+                R.layout.item_animal_spinner, animals);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
           runOnUiThread(() -> {
             contentView.loadUrl(url);
-            ArrayAdapter<Animal> adapter = new ArrayAdapter<>(MainActivity.this,
-                android.R.layout.simple_dropdown_item_1line, animals);
             animalSelector.setAdapter(adapter);
           });
         } else {
