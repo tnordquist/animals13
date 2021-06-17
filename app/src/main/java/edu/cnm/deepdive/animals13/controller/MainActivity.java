@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.animals13.controller;
 
+
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -13,6 +14,7 @@ import edu.cnm.deepdive.animals13.model.Animal;
 import edu.cnm.deepdive.animals13.service.WebServiceProxy;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     new Retriever().start();
   }
 
-  private static class Retriever extends Thread {
+  private class Retriever extends Thread {
 
     @Override
     public void run() {
@@ -51,8 +53,16 @@ public class MainActivity extends AppCompatActivity {
         Response<List<Animal>> response = WebServiceProxy.getInstance()
             .getAnimals(BuildConfig.API_KEY)
             .execute();
-        if(response.isSuccessful()) {
-          Log.d(getClass().getName(), response.message());
+        if (response.isSuccessful()) {
+          List<Animal> animals = response.body();
+          Random rng = new Random();
+          String url = animals.get(rng.nextInt(animals.size())).getImageUrl();
+          runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              contentView.loadUrl(url);
+            }
+          });
         } else {
           Log.e(getClass().getName(), response.message());
         }
