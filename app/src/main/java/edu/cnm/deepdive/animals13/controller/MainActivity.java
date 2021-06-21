@@ -2,10 +2,13 @@ package edu.cnm.deepdive.animals13.controller;
 
 
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +34,18 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     contentView = findViewById(R.id.content_view);
     animalSelector = findViewById(R.id.animal_selector);
+    animalSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        Animal animal = (Animal) adapterView.getItemAtPosition(position);
+        contentView.loadUrl(animal.getImageUrl());
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> adapterView) {
+
+      }
+    });
     setupWebView();
   }
 
@@ -60,12 +75,11 @@ public class MainActivity extends AppCompatActivity {
             .execute();
         if (response.isSuccessful()) {
           List<Animal> animals = response.body();
-          String url = animals.get(0).getImageUrl();
             adapter = new ArrayAdapter<>(MainActivity.this,
                 R.layout.item_animal_spinner, animals);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
           runOnUiThread(() -> {
-            contentView.loadUrl(url);
+//            contentView.loadUrl(url);
             animalSelector.setAdapter(adapter);
           });
         } else {
